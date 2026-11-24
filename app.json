@@ -1,0 +1,46 @@
+{
+  "expo": {
+    "name": "Hub & Tools",
+    "slug": "hub-tools",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "Камера нужна для верификации и загрузки документов в WebView.",
+        "NSPhotoLibraryUsageDescription": "Доступ к фото нужен для загрузки файлов в платёжных и регистрационных формах.",
+        "NSMicrophoneUsageDescription": "Микрофон может потребоваться для верификации в WebView."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#0B1026",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "READ_MEDIA_IMAGES",
+        "INTERNET"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Доступ к фото нужен для загрузки файлов в WebView.",
+          "cameraPermission": "Камера нужна для верификации в WebView."
+        }
+      ]
+    ]
+  }
+}
