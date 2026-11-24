@@ -11,7 +11,7 @@ UI: тёмная неоновая тема (deep blue / dark purple), glow, гр
 
 ### Откуда визуал
 
-Макет из ТЗ (`image_2026-11-24_17-42-46.png`) — основной. Поверх него взяты приёмы из реальных dark-neon прототипов:
+Макет из ТЗ — основной. Поверх него взяты приёмы из реальных dark-neon прототипов:
 
 - [Vault Nine / Crypto Wallet](https://sleek.design/templates/crypto-wallet-app) — obsidian + violet→cyan aurora, glow на балансе, glass-dock внизу
 - [Zelus Wallet](https://www.laknerdesign.com/zelus-wallet) — dark purple + оранжевый неон на акцентах
@@ -40,7 +40,7 @@ UI: тёмная неоновая тема (deep blue / dark purple), glow, гр
 
 ## Запуск
 
-Полная инструкция: **[APP_START.md](APP_START.md)**.
+Полная инструкция (Android и iOS, один Expo-поток): **[APP_START.md](APP_START.md)**.
 
 Кратко:
 
@@ -49,7 +49,7 @@ npm install
 npx expo start
 ```
 
-QR сканировать **внутри Expo Go**, не Камерой iPhone. Если телефон не видит ПК: `npx expo start --tunnel --clear`.
+QR сканировать **внутри Expo Go**. Если телефон не видит ПК: `npx expo start --tunnel --clear`. Эмулятор: `a` (Android) или `i` (iOS, macOS).
 
 ---
 
@@ -138,8 +138,9 @@ RootStack
 - `onOpenWindow` — `target=_blank` / `window.open` (банковские SDK часто так открывают приложение).
 - `originWhitelist={['*']}` + `mixedContentMode="always"` — смешанный контент шлюзов.
 - `javaScriptEnabled`, `domStorageEnabled`, `sharedCookiesEnabled` — сессия и 3DS.
-- `setSupportMultipleWindows` — Android не режет popup-окна.
-- `allowsInlineMediaPlayback` — iOS не ломает видео/камеру на страницах верификации.
+- `setSupportMultipleWindows={false}` — игры 1win и попапы грузятся в том же WebView (на Android второй window иначе крутит лоадер бесконечно).
+- `allowsInlineMediaPlayback` / `allowsFullscreenVideo` — видео и канвас игр.
+- Android: Chrome mobile User-Agent без `; wv`, iframe-навигацию не перехватываем.
 
 ### Загрузка файлов и камера
 
@@ -224,7 +225,7 @@ Permissions в `app.json` (CAMERA, PHOTO LIBRARY). `onFileDownload` запраш
     Home / Checklist / Analytics / Settings. WebView поверх табов, назад возвращает на табы.
 
 18. **Тема**  
-    Deep purple/blue фон, glow у кнопок, скругления, blur на таббаре и модалках. Сравнить с `image_2026-11-24_17-42-46.png`.
+    Deep purple/blue фон, glow у кнопок, скругления, blur на таббаре и модалках.
 
 ---
 

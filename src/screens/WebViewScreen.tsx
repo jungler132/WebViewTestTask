@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { AppWebView, type WebViewHandle, type WebViewNavState } from '../features/webview/AppWebView';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -9,7 +9,12 @@ import { LinearGradient } from 'expo-linear-gradient';
 import * as ImagePicker from 'expo-image-picker';
 import { colors, s } from '../theme';
 import { getBrand } from '../features/webview/brands';
-import { isHttpUrl, shouldAllowWebViewRequest } from '../features/webview/handleNavigation';
+import {
+  ANDROID_CHROME_UA,
+  isHttpUrl,
+  SAME_WINDOW_OPEN_SCRIPT,
+  shouldAllowWebViewRequest,
+} from '../features/webview/handleNavigation';
 import type { RootStackParamList } from '../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'WebView'>;
@@ -23,6 +28,7 @@ export function WebViewScreen({ navigation, route }: Props) {
   const [canGoBack, setCanGoBack] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
+  const firstPaintDone = useRef(false);
 
   const handleNavChange = (nav: WebViewNavState) => {
     setCanGoBack(nav.canGoBack);
@@ -38,6 +44,7 @@ export function WebViewScreen({ navigation, route }: Props) {
   }, []);
 
   const retry = useCallback(async () => {
+    firstPaintDone.current = false;
     setError(null);
     setLoading(true);
     setProgress(0.12);
@@ -117,24 +124,39 @@ export function WebViewScreen({ navigation, route }: Props) {
             domStorageEnabled
             sharedCookiesEnabled
             thirdPartyCookiesEnabled
-            setSupportMultipleWindows
+            setSupportMultipleWindows={false}
+            javaScriptCanOpenWindowsAutomatically
             mixedContentMode="always"
             originWhitelist={['*']}
             allowsInlineMediaPlayback
+            allowsFullscreenVideo
             mediaPlaybackRequiresUserAction={false}
             allowsBackForwardNavigationGestures
+            nestedScrollEnabled
+            androidLayerType="hardware"
+            userAgent={Platform.OS === 'android' ? ANDROID_CHROME_UA : undefined}
+            injectedJavaScriptBeforeContentLoaded={SAME_WINDOW_OPEN_SCRIPT}
             startInLoadingState
-            onLoadProgress={(event: { nativeEvent: { progress: number } }) =>
-              setProgress(event.nativeEvent.progress)
-            }
-            onLoadStart={() => {
-              setLoading(true);
-              setError(null);
+            onLoadProgress={(event: { nativeEvent: { progress: number } }) => {
+              setProgress(event.nativeEvent.progress);
+              if (event.nativeEvent.progress >= 1) {
+                firstPaintDone.current = true;
+                setLoading(false);
+              }
             }}
-            onLoadEnd={() => setLoading(false)}
+            onLoadStart={() => {
+              setError(null);
+              if (!firstPaintDone.current) {
+                setLoading(true);
+              }
+            }}
+            onLoadEnd={() => {
+              firstPaintDone.current = true;
+              setLoading(false);
+            }}
             onNavigationStateChange={handleNavChange}
-            onShouldStartLoadWithRequest={(request: { url: string }) =>
-              shouldAllowWebViewRequest(request.url)
+            onShouldStartLoadWithRequest={(request: { url: string; isTopFrame?: boolean }) =>
+              shouldAllowWebViewRequest(request.url, request.isTopFrame !== false)
             }
             onOpenWindow={(event: { nativeEvent: { targetUrl: string } }) => {
               const url = event.nativeEvent.targetUrl;

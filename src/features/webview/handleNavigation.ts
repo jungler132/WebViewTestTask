@@ -96,10 +96,39 @@ export async function openExternalUrl(url: string): Promise<void> {
   }
 }
 
-export function shouldAllowWebViewRequest(url: string): boolean {
+export function shouldAllowWebViewRequest(
+  url: string,
+  isTopFrame: boolean = true,
+): boolean {
+  // Android fires this for iframes (games). Never block subframes.
+  if (!isTopFrame) {
+    return true;
+  }
   if (shouldOpenExternally(url)) {
     void openExternalUrl(url);
     return false;
   }
   return true;
 }
+
+/** Games and 3DS often call window.open; Android has no second WebView to show. */
+export const SAME_WINDOW_OPEN_SCRIPT = `
+(function() {
+  var nativeOpen = window.open;
+  window.open = function(url) {
+    if (url && /^https?:/i.test(String(url))) {
+      window.location.href = url;
+      return window;
+    }
+    if (nativeOpen) {
+      return nativeOpen.apply(window, arguments);
+    }
+    return window;
+  };
+})();
+true;
+`;
+
+export const ANDROID_CHROME_UA =
+  'Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.36';
+
