@@ -6,6 +6,18 @@ WebView и intent проверять **на телефоне или эмулят
 
 Проект на **Expo SDK 58**.
 
+## Expo Share Link (preview)
+
+Ревьюер может открыть сборку **без** `npx expo start` на вашем ПК:
+
+https://expo.dev/accounts/jungler132/projects/hub-tools/updates/cbe3b089-06ec-4794-9367-ecb2b928c46b
+
+1. Открыть ссылку в браузере.
+2. Нажать **Preview**.
+3. QR сканировать **внутри Expo Go** (версия под SDK 58).
+
+Если QR не открывается — обновить Expo Go. Это EAS Update на ветке `preview`, runtime `1.0.0`.
+
 ## Что нужно
 
 - Node.js 18+

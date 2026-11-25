@@ -51,6 +51,11 @@ npx expo start
 
 QR сканировать **внутри Expo Go**. Если телефон не видит ПК: `npx expo start --tunnel --clear`. Эмулятор: `a` (Android) или `i` (iOS, macOS).
 
+**Expo Share / Preview (без локального Metro):**  
+https://expo.dev/accounts/jungler132/projects/hub-tools/updates/cbe3b089-06ec-4794-9367-ecb2b928c46b  
+
+Открыть ссылку → **Preview** → QR сканировать в **Expo Go** (SDK 58).
+
 ---
 
 ## Структура проекта
